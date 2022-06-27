@@ -1,5 +1,5 @@
 const Poster = require('../models/posterModel')
-
+const User = require('../models/userModel')
 //@route    GET/poster
 //@desc     get all posters
 //access    Public
@@ -9,6 +9,7 @@ const getPostersPage = async(req,res) => {
     res.render('poster/posters', {
       title:"Poster page",
       posters:posters.reverse(),
+      user: req.session.user,
       url: process.env.URL
     });
   } catch (err) {
@@ -24,6 +25,7 @@ const getOnePoster = async(req,res) => {
   res.render('poster/one', {
     title:poster.title,
     poster,
+    user: req.session.user,
     url: process.env.URL
   });
 }
@@ -46,16 +48,24 @@ const addNewPosterPage = async(req,res) => {
 //access  Private
 const addNewPoster = async(req,res) => {
   try { 
-    const poster = {
+    const newPoster = new Poster({
       title: req.body.title,
       amount:req.body.amount,
       image:'uploads/' + req.file.filename,
       region: req.body.region,
       description: req.body.description
-    }
+    })
 
-    await Poster.create(poster)
-    res.redirect('/posters')
+    await User.findByIdAndUpdate(
+      req.session.user._id,
+       {$push: {posters: newPoster._id}},
+       {new:true, upsert: true })
+
+    await newPoster.save((err, posterSaved) => {
+      if(err) throw err
+      const posterId = posterSaved._id
+      res.redirect('/posters/' + posterId)
+    })
   } catch (err) {
     console.log(err);
   }

@@ -11,20 +11,20 @@
         <div class="col-lg-8">
           <div class="row">
             <div class="card">
-              {{#if userProfile}}
+              {{#if user}}
               <h3 class="poster-page-title">Foydalanuvchi haqida ma'lumot</h3>
-              <h1 class="poster-page-amount mb-5">{{userProfile.username}}</h1>
+              <h1 class="poster-page-amount mb-5">{{user.username}}</h1>
               <h4>Qo'shimcha ma'lumotlar</h4>
               <hr>
               <div>
-                <h5 class="">Username: <small class="text-primary">{{userProfile.username}}</small></h5>
-                <h5 class="">Telefon: <small class="text-primary">{{userProfile.phone}}</small></h5>
+                <h5 class="">Username: <small class="text-primary">{{user.username}}</small></h5>
+                <h5 class="">Telefon: <small class="text-primary">{{user.phone}}</small></h5>
                 
               </div>
               <hr>
               <div class="d-flex justify-content-between">
-                <p>ID: {{userProfile._id}}</p>
-                <p>E'lonlar soni: {{userProfile.posters.length}}</p>
+                <p>ID: {{user._id}}</p>
+                <p>E'lonlar soni: {{user.posters.length}}</p>
               </div>
             </div>
             {{/if}}

@@ -30,7 +30,42 @@ const posterSchema = new Schema ({
   visits: {
     type:Number,
     default:1
+  },
+  category: {
+    type: String,
+    required: true,
+    enum: ['realty', 'transport', 'electronics', 'jobs']
+  },
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   }
+},
+{
+  timestamps: true
 })
+
+// creating indexes 
+posterSchema.index({
+  title:"text",
+  description:"text"
+})
+
+posterSchema.statics = {
+  searchPartial: function(q, callback){
+    return this.find({
+      $or: [
+        { "title": new RegExp(q, "gi")},
+        { "description": new RegExp(q, "gi")}
+      ]
+    }, callback)
+  },
+
+  searchFull: function(q, callback){
+    return this.find({
+      $text: { $search: q, $caseSensitive: false}
+    }, callback)
+  }
+}
 
 module.exports = model('Poster', posterSchema)

@@ -8,6 +8,7 @@ const getLoginPage = (req,res) => {
   if(!req.session.isLogged){
     res.render('auth/login', {
       title:"Login",
+      loginError: req.flash('loginError'),
       url: process.env.URL
     })
   }
@@ -17,9 +18,10 @@ const getLoginPage = (req,res) => {
 //@desc     get register page
 //access    Public
 const getRegisterPage = (req,res) => {
-  if(!req.sesion.isLogged){
+  if(!req.session.isLogged){
     res.render('auth/signup', {
       title:"Registration",
+      regError: req.flash('regError'),
       url: process.env.URL
     })
   }
@@ -37,9 +39,11 @@ const registerNewUser = async (req,res) => {
     const userExist = await User.findOne({email})
 
     if(userExist){
+      req.flash('regError','This user has already registered')
       return res.redirect('/auth/signup')
     }
     if(password !== password2){
+      req.flash('regError','You have two different password')
       return res.redirect('/auth/signup')
     }
 
@@ -74,10 +78,12 @@ const loginUser = async(req, res) => {
         })
       }
       else{
+        req.flash('loginError', 'Wrong information')
         res.redirect('/auth/login')
       }
     }
     else{
+      req.flash('loginError', 'This user is not available')
       res.redirect('/auth/login')
     }
   } catch (err) {

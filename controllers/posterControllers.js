@@ -48,13 +48,17 @@ const getPostersPage = async (req, res) => {
 
     const posters = await Poster
     .find()
-    .sort({createdAt:-1 })
     .skip((page * limit) - limit)
     .limit(limit)
     .lean()
      return res.render('poster/posters', {
       title: "Poster page",
       posters: posters.reverse(),
+      pagination: {
+        page,
+        limit,
+        pageCount: Math.ceil(total/limit)
+      },
       user: req.session.user,
       url: process.env.URL
     });

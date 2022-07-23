@@ -19,8 +19,11 @@ const getPostersPage = async (req, res) => {
 
     if (req.query.search) {
       const { search } = req.query
-      const posters = await Poster.searchPartial(search, (err, data) => {
-        if (err) throw new Error
+      search.toLowerCase()
+      const posters = await Poster.find({
+        title: {
+          $regex: search
+        }
       }).lean()
 
       return res.status(200).render('poster/searchResults', {
@@ -103,9 +106,10 @@ const addNewPosterPage = async (req, res) => {
 const addNewPoster = async (req, res) => {
   try {
     const newPoster = new Poster({
-      title: req.body.title,
+      title: req.body.title.toLowerCase(),
       amount: req.body.amount,
       image: 'uploads/' + req.file.filename,
+      category: req.body.category,
       region: req.body.region,
       description: req.body.description,
       author: req.session.user._id
@@ -152,6 +156,7 @@ const updatePoster = async (req, res) => {
       amount: req.body.amount,
       image: 'uploads/' + req.file.filename,
       region: req.body.region,
+      category: req.body.category,
       description: req.body.description
     }
     await Poster.findByIdAndUpdate(req.params.id, editedPoster)
